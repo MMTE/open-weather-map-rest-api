@@ -1,0 +1,14 @@
+{
+  "name": "open-weather-map-rest-api",
+  "version": "1.0.0",
+  "description": "RESTful API performing weather api requests",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

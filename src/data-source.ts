@@ -1,4 +1,5 @@
 import { DataSource } from 'typeorm';
+import { Weather } from './entities/Weather';
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
@@ -9,6 +10,6 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'mydatabase',
   synchronize: process.env.NODE_ENV === 'development',
   logging: process.env.NODE_ENV === 'development',
-  entities: [],
+  entities: [Weather],
   migrations: ['src/migrations/**/*.ts'],
 });

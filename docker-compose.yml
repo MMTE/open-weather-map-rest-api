@@ -1,4 +1,24 @@
 services:
+  app:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: weather_db
+      REDIS_URL: redis://redis:6379
+      OPENWEATHER_API_KEY: 775af46de8862f9072db9b56ae43a8a4
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - app-network
+
   postgres:
     image: postgres:16.6
     ports:
@@ -9,6 +29,8 @@ services:
       - POSTGRES_DB=weather_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
 
   redis:
     image: redis:alpine
@@ -16,7 +38,14 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - app-network
 
 volumes:
   redis_data:
   postgres_data:
+
+
+networks:
+  app-network:
+    driver: bridge

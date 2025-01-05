@@ -62,6 +62,9 @@ After installation, the API server runs on `http://localhost:3000` by default. T
 
 Test the API using tools like Postman or cURL.
 
+The API documentation is accessible via Swagger UI at the `/api-docs` endpoint, providing an interactive interface for exploring and testing the available endpoints.
+
+
 ## API Endpoints
 
 ### Base URL
@@ -160,4 +163,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For questions or feedback, feel free to reach out:
 
 - Mahdi [work.taleghani@gmail.com](mailto:work.taleghani@gmail.com)
-- GitHub: [github.com/yourusername](https://github.com/yourusername)
+- GitHub: [github.com/mmte](https://github.com/mmte)

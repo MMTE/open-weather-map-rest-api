@@ -8,7 +8,7 @@ import {
 import { IsString, IsNumber, IsOptional, Min, Max } from "class-validator";
 import { Transform } from "class-transformer";
 
-@Entity("weather")
+@Entity({name:'weather'})
 export class WeatherEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;

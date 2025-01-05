@@ -1,0 +1,467 @@
+{
+  "openapi": "3.0.0",
+  "servers": [{ "url": "/api" }],
+  "info": {
+    "title": "Weather API",
+    "version": "1.0.0",
+    "description": "API documentation for the Weather application."
+  },
+  "components": {
+    "schemas": {
+      "Weather": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the weather record."
+          },
+          "cityName": {
+            "type": "string",
+            "nullable": true,
+            "description": "The name of the city."
+          },
+          "country": {
+            "type": "string",
+            "nullable": true,
+            "description": "The country code of the city."
+          },
+          "lon": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "The longitude of the location."
+          },
+          "lat": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "The latitude of the location."
+          },
+          "temperature": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "The current temperature."
+          },
+          "feelsLike": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "The temperature as it feels to humans."
+          },
+          "tempMin": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "The minimum temperature at the moment."
+          },
+          "tempMax": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "The maximum temperature at the moment."
+          },
+          "pressure": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Atmospheric pressure."
+          },
+          "humidity": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Humidity percentage."
+          },
+          "windSpeed": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Wind speed."
+          },
+          "windDeg": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Wind direction in degrees."
+          },
+          "windGust": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Gust speed of the wind."
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Weather condition description."
+          },
+          "visibility": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Visibility distance."
+          },
+          "cloudiness": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Cloudiness percentage."
+          },
+          "rainVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "default": 0,
+            "description": "Rain volume."
+          },
+          "snowVolume": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "default": 0,
+            "description": "Snow volume."
+          },
+          "units": {
+            "type": "string",
+            "description": "Measurement units (e.g., metric)."
+          },
+          "fetchedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The date and time when the weather data was fetched."
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Record creation timestamp."
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Record update timestamp."
+          }
+        },
+        "required": [
+          "cityName",
+          "country",
+          "lon",
+          "lat",
+          "temperature",
+          "feelsLike",
+          "pressure",
+          "humidity",
+          "windSpeed",
+          "windDeg",
+          "description",
+          "visibility",
+          "cloudiness",
+          "units",
+          "fetchedAt"
+        ]
+      },
+      "WeatherData": {
+        "type": "object",
+        "properties": {
+          "cityName": {
+            "type": "string",
+            "description": "The name of the city."
+          },
+          "country": {
+            "type": "string",
+            "description": "The country code of the city."
+          },
+          "lon": {
+            "type": "number",
+            "format": "double",
+            "description": "The longitude of the location."
+          },
+          "lat": {
+            "type": "number",
+            "format": "double",
+            "description": "The latitude of the location."
+          },
+          "temperature": {
+            "type": "number",
+            "format": "double",
+            "description": "The current temperature."
+          },
+          "feelsLike": {
+            "type": "number",
+            "format": "double",
+            "description": "The temperature as it feels to humans."
+          },
+          "tempMin": {
+            "type": "number",
+            "format": "double",
+            "description": "The minimum temperature at the moment."
+          },
+          "tempMax": {
+            "type": "number",
+            "format": "double",
+            "description": "The maximum temperature at the moment."
+          },
+          "pressure": {
+            "type": "number",
+            "format": "double",
+            "description": "Atmospheric pressure."
+          },
+          "humidity": {
+            "type": "number",
+            "format": "double",
+            "description": "Humidity percentage."
+          },
+          "windSpeed": {
+            "type": "number",
+            "format": "double",
+            "description": "Wind speed."
+          },
+          "windDeg": {
+            "type": "number",
+            "format": "double",
+            "description": "Wind direction in degrees."
+          },
+          "windGust": {
+            "type": "number",
+            "format": "double",
+            "nullable": true,
+            "description": "Gust speed of the wind."
+          },
+          "description": {
+            "type": "string",
+            "description": "Weather condition description."
+          },
+          "visibility": {
+            "type": "number",
+            "format": "double",
+            "description": "Visibility distance."
+          },
+          "cloudiness": {
+            "type": "number",
+            "format": "double",
+            "description": "Cloudiness percentage."
+          },
+          "rainVolume": {
+            "type": "number",
+            "format": "double",
+            "default": 0,
+            "description": "Rain volume."
+          },
+          "snowVolume": {
+            "type": "number",
+            "format": "double",
+            "default": 0,
+            "description": "Snow volume."
+          },
+          "units": {
+            "type": "string",
+            "description": "Measurement units (e.g., metric)."
+          }
+        },
+        "required": [
+          "cityName",
+          "country",
+          "lon",
+          "lat",
+          "temperature",
+          "feelsLike",
+          "pressure",
+          "humidity",
+          "windSpeed",
+          "windDeg",
+          "description",
+          "visibility",
+          "cloudiness",
+          "units"
+        ]
+      },
+      "CreateWeatherData": {
+        "type": "object",
+        "properties": {
+          "cityName": {
+            "type": "string",
+            "example": "london",
+            "description": "The name of the city."
+          },
+          "country": {
+            "type": "string",
+            "example": "uk",
+            "description": "The country code of the city."
+          }
+        },
+        "required": ["cityName", "country"]
+      }
+    }
+  },
+  "paths": {
+    "/weather": {
+      "get": {
+        "summary": "Retrieve a list of all weather records.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of weather records.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Weather"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new weather record.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWeatherData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created the weather record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Weather"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/weather/{id}": {
+      "get": {
+        "summary": "Retrieve a specific weather record by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Numeric ID of the weather record to retrieve.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the weather record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Weather"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "The weather record was not found."
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an existing weather record.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Numeric ID of the weather record to update.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WeatherData"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated the weather record.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Weather"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Weather record not found."
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a specific weather record by ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Numeric ID of the weather record to delete.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted the weather record."
+          },
+          "404": {
+            "description": "Weather record not found."
+          }
+        }
+      }
+    },
+    "/weather/latest/{cityName}": {
+      "get": {
+        "summary": "Retrieve the latest weather record for a city.",
+        "parameters": [
+          {
+            "name": "cityName",
+            "in": "path",
+            "required": true,
+            "description": "Name of the city to retrieve the latest weather record.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved the latest weather record for the city.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Weather"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No weather data found for this city."
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,3 +1,8 @@
+/**
+ * @fileoverview This module provides the WeatherService class which manages weather data interactions
+ * using a weather API, a relational database, and a Redis cache. It supports operations like fetching,
+ * caching, updating, deleting, and retrieving weather information.
+ */
 import {Repository} from 'typeorm';
 import axios from 'axios';
 import {WeatherRequestParams, WeatherResponseData} from '../types/weather';
@@ -7,12 +12,17 @@ import {WeatherEntity} from "../entities/Weather.entity";
 import {AppDataSource} from "../data-source";
 import {RedisClientType} from "@redis/client";
 
+/**
+ * @class WeatherService
+ * @classdesc Provides methods for managing weather data, including fetching from OpenWeather API,
+ * saving to database, and caching.
+ */
 export class WeatherService {
     private readonly weatherRepository: Repository<WeatherEntity>;
     private readonly apiKey: string;
     private readonly baseUrl: string;
     private readonly cache: RedisClientType;
-    private readonly CACHE_TTL = 1800;
+    private readonly CACHE_TTL = 1800; // 30 minutes
 
     constructor() {
         this.weatherRepository = AppDataSource.getRepository(WeatherEntity);
@@ -22,14 +32,33 @@ export class WeatherService {
         this.cache = redisClient;
     }
 
+    /**
+     * Generates a cache key based on latitude, longitude, and units.
+     * @param {number} lat - Latitude of the location.
+     * @param {number} lon - Longitude of the location.
+     * @param {string} [units='metric'] - Units for temperature measurement.
+     * @returns {string} - Cache key.
+     */
     private getCacheKey(lat: number, lon: number, units?: string): string {
         return `weather:${lat}:${lon}:${units || 'metric'}`;
     }
 
+    /**
+     * Generates a cache key based on city name, country code, and units.
+     * @param {string} cityName - Name of the city.
+     * @param {string} [countryCode=''] - Country code.
+     * @param {string} [units='metric'] - Units for temperature measurement.
+     * @returns {string} - Cache key.
+     */
     private generateCacheKey(cityName: string, countryCode: string = '', units: string = 'metric'): string {
         return `weather:${cityName.toLowerCase()}:${countryCode}:${units}`;
     }
 
+    /**
+     * Maps API weather response data to a WeatherEntity instance.
+     * @param {WeatherResponseData} response - The weather data retrieved from the API.
+     * @returns {WeatherEntity} - The weather entity to be saved.
+     */
     private mapResponseToEntity(response: WeatherResponseData): WeatherEntity {
         const weather = new WeatherEntity();
         weather.cityName = response.name;
@@ -52,6 +81,12 @@ export class WeatherService {
         return weather;
     }
 
+    /**
+     * Fetches weather data by geographical coordinates and returns a WeatherEntity.
+     * @param {WeatherRequestParams} params - Query parameters including latitude, longitude, units, and language.
+     * @returns {Promise<WeatherEntity>} - The weather entity.
+     * @throws {ApiError} - Thrown if the request to the API fails.
+     */
     async getWeatherByCoordinates(params: WeatherRequestParams): Promise<WeatherEntity> {
         const cacheKey = this.getCacheKey(params.lat, params.lon, params.units);
         const cached = await this.cache.get(cacheKey);
@@ -87,20 +122,31 @@ export class WeatherService {
         }
     }
 
+    /**
+     * Fetches weather data by city name and optional country code.
+     * @param {string} cityName - Name of the city.
+     * @param {string} [countryCode] - Country code.
+     * @param {string} [units='metric'] - Units for temperature measurement.
+     * @param {string} [lang='en'] - Language for the response.
+     * @returns {Promise<WeatherEntity>} - The weather entity.
+     * @throws {ApiError} - Thrown if the request to the API fails or location not found.
+     */
     async getWeatherByCityName(cityName: string, countryCode?: string, units: string = 'metric', lang: string = 'en'): Promise<WeatherEntity> {
-        // const cacheKey = this.generateCacheKey(cityName, countryCode, units);
-        // const cached = await this.cache.get(cacheKey);
+        const cacheKey = this.generateCacheKey(cityName, countryCode, units);
+        const cached = await this.cache.get(cacheKey);
 
-        // if (cached) {
-        //     return JSON.parse(cached);
-        // }
+        if (cached) {
+            return JSON.parse(cached);
+        }
+
         try {
             const weatherRequest = await axios.get(this.baseUrl, {
                 params: {
                     q: `${cityName.toLowerCase()}${countryCode.toLowerCase() ? ',' + countryCode.toLowerCase() : ''}`,
                     limit: 1,
                     units: "metric",
-                    appid: this.apiKey
+                    appid: this.apiKey,
+                    lang: lang
                 }
             });
 
@@ -108,12 +154,10 @@ export class WeatherService {
                 throw new Error('Could not find location coordinates for the specified city.');
             }
 
-            console.log(weatherRequest)
-
             const data = weatherRequest.data;
             const weatherEntity = this.mapResponseToEntity(data);
             const saved = await this.weatherRepository.save(weatherEntity);
-            // await this.cache.setEx(cacheKey, this.CACHE_TTL, JSON.stringify(saved));
+            await this.cache.setEx(cacheKey, this.CACHE_TTL, JSON.stringify(saved));
             return saved;
 
         } catch (error) {
@@ -128,6 +172,12 @@ export class WeatherService {
         }
     }
 
+    /**
+     * Retrieves the most recent weather data entry for a given city.
+     * @param {string} cityName - Name of the city.
+     * @returns {Promise<WeatherEntity>} - The latest weather entity.
+     * @throws {ApiError} - Thrown if no data is found for the city.
+     */
     async getLatestByCity(cityName: string): Promise<WeatherEntity> {
         const cacheKey = `latest:${cityName.toLowerCase()}`;
         const cached = await this.cache.get(cacheKey);
@@ -148,6 +198,12 @@ export class WeatherService {
         return weather;
     }
 
+    /**
+     * Retrieves a weather entity by its ID.
+     * @param {string} id - The ID of the weather entity.
+     * @returns {Promise<WeatherEntity>} - The weather entity.
+     * @throws {ApiError} - Thrown if the record is not found.
+     */
     async getWeatherById(id: string): Promise<WeatherEntity> {
         const weather = await this.weatherRepository.findOne({
             where: {id}
@@ -160,12 +216,28 @@ export class WeatherService {
         return weather;
     }
 
+    /**
+     * Retrieves all weather records, sorted by the most recent.
+     * @returns {Promise<WeatherEntity[]>} - Array of weather entities.
+     */
     async getAllWeather(): Promise<WeatherEntity[]> {
-        return this.weatherRepository.find({
-            order: {fetchedAt: 'DESC'}
-        });
+        
+        try {
+            // Fetch all records, ordered by the fetchedAt column
+            const weatherRecords = await this.weatherRepository.find();
+            return weatherRecords;
+        } catch (error) {
+            console.error('Failed to fetch all weather records:', error.message, error.stack);
+            throw new ApiError(500, 'Failed to retrieve weather data');
+        }
     }
 
+
+    /**
+     * Deletes a weather entity by ID and clears related cache entries.
+     * @param {string} id - The ID of the weather entity.
+     * @returns {Promise<void>}
+     */
     async deleteWeather(id: string): Promise<void> {
         const weather = await this.getWeatherById(id);
         await this.weatherRepository.remove(weather);
@@ -178,6 +250,12 @@ export class WeatherService {
         ]);
     }
 
+    /**
+     * Updates an existing weather entity's data.
+     * @param {string} id - The ID of the weather entity.
+     * @param {Partial<WeatherEntity>} updateData - Partial update data.
+     * @returns {Promise<WeatherEntity>} - The updated weather entity.
+     */
     async updateWeather(id: string, updateData: Partial<WeatherEntity>): Promise<WeatherEntity> {
         const weather = await this.getWeatherById(id);
         Object.assign(weather, updateData);

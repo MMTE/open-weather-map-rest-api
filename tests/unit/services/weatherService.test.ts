@@ -1,37 +1,37 @@
-import {Repository, FindOneOptions, FindManyOptions} from 'typeorm';
-import axios from 'axios';
 import {WeatherService} from "../../../src/services/weatherService";
-import {WeatherEntity} from "../../../src/entities/Weather.entity";
 import {AppDataSource} from "../../../src/data-source";
-import {redisClient} from "../../../src/config/redis";
-
-jest.mock('axios');
+import {WeatherEntity} from "../../../src/entities/Weather.entity";
+import 'dotenv/config'
 
 jest.mock('../../../src/config/redis', () => ({
-    redisClient: {
-        get: jest.fn(),
-        setEx: jest.fn(),
-        del: jest.fn(),
-    },
+  redisClient: {
+    get: jest.fn(),
+    setEx: jest.fn(),
+    del: jest.fn(),
+  },
 }));
 
-jest.mock('../../../src/data-source', () => ({
-    AppDataSource: {
-        getRepository: jest.fn(),
-    },
-}));
+const weatherService = new WeatherService();
+
+beforeAll(async () => {
+  await AppDataSource.initialize();
+});
+
+afterAll(async () => {
+  await AppDataSource.destroy();
+});
 
 describe('WeatherService', () => {
-    let weatherService: WeatherService;
-    let mockRepository: jest.Mocked<Repository<WeatherEntity>>;
-    let mockRedis: any;
+  // Existing tests...
 
-    const mockWeatherData = {
-        name: 'London',
-        coord: {lat: 51.51, lon: -0.13},
-        sys: {country: 'GB'},
-        main: {
-            temp: 15.2,
+  test('getWeatherByCityName - Integration Test', async () => {
+    const cityName = 'London';
+    const response = await weatherService.getWeatherByCityName(cityName);
+    expect(response).toBeDefined();
+    expect(response.cityName).toBe(cityName);
+    expect(response.temperature).toBeDefined();
+    expect(response.humidity).toBeDefined();
+  });
             feels_like: 14.8,
             pressure: 1012,
             humidity: 76,

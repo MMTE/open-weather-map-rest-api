@@ -64,6 +64,23 @@ Test the API using tools like Postman or cURL.
 
 The API documentation is accessible via Swagger UI at the `/api-docs` endpoint, providing an interactive interface for exploring and testing the available endpoints.
 
+## Running with Docker
+
+To run the API using Docker Compose, you first need to ensure Docker and Docker Compose are installed on your system.
+
+1. **Build and Run Container:**
+
+   There is a `docker-compose.yml` file in the root directory of the project
+
+   You can build Dockerfile or docker compose will build that automatically.
+
+2. **Start and Stop the Service:**
+
+   To start the service in the background (detached mode), run:
+
+   ```bash
+   docker-compose up -d
+   ```
 
 ## API Endpoints
 
@@ -74,11 +91,13 @@ http://localhost:3000/api
 ### Endpoints
 
 - **Retrieve All Weather Records**
+
   - **URL:** `/weather`
   - **Method:** `GET`
   - **Description:** Retrieves a list of all stored weather records.
 
 - **Create a New Weather Record**
+
   - **URL:** `/weather`
   - **Method:** `POST`
   - **Description:** Creates a new weather record for a specified city and country.
@@ -92,11 +111,13 @@ http://localhost:3000/api
     ```
 
 - **Retrieve a Specific Weather Record by ID**
+
   - **URL:** `/weather/{id}`
   - **Method:** `GET`
   - **Description:** Retrieves a specific weather record by its ID.
 
 - **Update a Specific Weather Record by ID**
+
   - **URL:** `/weather/{id}`
   - **Method:** `PUT`
   - **Description:** Updates an existing weather record by its ID.
@@ -122,6 +143,7 @@ http://localhost:3000/api
     ```
 
 - **Delete a Specific Weather Record by ID**
+
   - **URL:** `/weather/{id}`
   - **Method:** `DELETE`
   - **Description:** Deletes a specific weather record by its ID.
